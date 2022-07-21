@@ -1,0 +1,36 @@
+name: OCI Deploy
+
+# Controls when the workflow will run
+on:
+  # Manually triggered on the Actions tab.
+  workflow_dispatch:
+
+
+jobs:
+  my-instances:
+    runs-on: ubuntu-latest
+    name: List the display name and shape of the instances in my compartment
+    env:
+      OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+      OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+      OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+      OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+      OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+    steps:
+      - name: Retrieve the OCID of a named compartment in tenancy
+        uses: oracle-actions/run-oci-cli-command@v1.0
+        id: get-compartment-ocid
+        with:
+          command: 'iam compartment list'
+          jmespath: "data[?name=='testing'].id"
+
+      - name: Retrieve the display name and shape of the instances in my compartment
+        uses: oracle-actions/run-oci-cli-command@v1.0
+        id: find-my-instances-instances
+        with:
+          command: 'compute instance list --compartment-id ${{ steps.compartment-ocid.get-compartment-ocid.raw_output }}'
+          jmespath: 'data[*].{name: \"display-name\", shape: shape}'
+
+      - name: List the display name and shape of the instances in my compartment
+        run: |
+          echo ${{ steps.find-my-compartment-instances.outputs.output }} | jq .
