@@ -22,14 +22,14 @@ jobs:
         id: get-compartment-ocid
         with:
           command: 'iam compartment list'
-          jmespath: "data[?name=='testing'].id"
+          query: "data[?name=='testing'].id"
 
       - name: Retrieve the display name and shape of the instances in my compartment
         uses: oracle-actions/run-oci-cli-command@v1.0
         id: find-my-instances-instances
         with:
           command: 'compute instance list --compartment-id ${{ steps.compartment-ocid.get-compartment-ocid.raw_output }}'
-          jmespath: 'data[*].{name: \"display-name\", shape: shape}'
+          query: 'data[*].{name: \"display-name\", shape: shape}'
 
       - name: List the display name and shape of the instances in my compartment
         run: |
