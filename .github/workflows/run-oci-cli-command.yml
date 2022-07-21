@@ -1,10 +1,7 @@
-name: OCI Deploy
+name: Test run-oci-cli-command GitHub Action
 
-# Controls when the workflow will run
 on:
-  # Manually triggered on the Actions tab.
   workflow_dispatch:
-
 
 jobs:
   my-instances:
