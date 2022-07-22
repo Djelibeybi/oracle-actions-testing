@@ -1,4 +1,4 @@
-name: Test run-oci-cli-command GitHub Action
+name: Test oracle-actions/run-oci-cli-command
 
 on:
   workflow_dispatch:
