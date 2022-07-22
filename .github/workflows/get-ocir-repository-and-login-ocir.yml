@@ -1,4 +1,4 @@
-name: Test get-ocir-repository and login-ocir GitHub Actions
+name: Test oracle-actions/get-ocir-repository and oracle-actions/login-ocir
 
 on:
   workflow_dispatch:
