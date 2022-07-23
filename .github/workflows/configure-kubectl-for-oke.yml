@@ -2,6 +2,9 @@ name: Test oracle-actions/configure-kubectl-oke
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '12 6 * * *'
+    - cron: '38 12 * * *'
 
 jobs:
   install-kubectl:

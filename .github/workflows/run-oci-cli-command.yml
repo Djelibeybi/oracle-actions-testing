@@ -2,6 +2,9 @@ name: Test oracle-actions/run-oci-cli-command
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '16 6 * * *'
+    - cron: '36 12 * * *'
 
 jobs:
   my-instances:

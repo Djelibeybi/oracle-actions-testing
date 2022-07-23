@@ -2,6 +2,9 @@ name: Test oracle-actions/get-ocir-repository and oracle-actions/login-ocir
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '14 6 * * *'
+    - cron: '34 12 * * *'
 
 jobs:
   get-ocir-repository-test:
