@@ -5,7 +5,7 @@ on:
 
 jobs:
   install-kubectl:
-    runs-on: ubuntu
+    runs-on: ubuntu-latest
     name: Install Kubectl for OKE
     env:
       OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
