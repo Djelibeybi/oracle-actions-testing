@@ -27,13 +27,18 @@ jobs:
           echo "::set-output name=filepath::${TEST_FILE_FULL_PATH}"
 
       - name: Create metadata JSON
-        id: json
+        id: create-json
         run: |
-          echo "::set-output name=metadata::{\"created_by\":\"$GITHUB_ACTOR\",\"triggered_by\":\"$GITHUB_EVENT_NAME\"}]}"
+          echo "::set-output name=metadata::{\"created_by\":\"$GITHUB_ACTOR\",\"triggered_by\":\"$GITHUB_EVENT_NAME\"}
+
+      - name: Check JSON
+        run: |
+          echo '${{ steps.create-json.outputs.metadata }}' | jq
+
 
       - name: Upload the test file to object storage
         uses: oracle-actions/run-oci-cli-command@v1.0
         id: upload-file
         with:
-          command: os object put -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --file ${{ steps.create-file.outputs.filepath }} --metadata ${{ steps.json.outputs.metadata }}
+          command: os object put -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --file ${{ steps.create-file.outputs.filepath }} --metadata '${{ steps.create-json.outputs.metadata }}'
           silent: false
