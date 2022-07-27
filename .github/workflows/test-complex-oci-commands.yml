@@ -31,3 +31,4 @@ jobs:
         id: upload-file
         with:
           command: os object put -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --file ${{ steps.create-file.outputs.filepath }} --metadata '{\"created_by":\"$GITHUB_ACTOR\",\"key2\":\"$GITHUB_EVENT_NAME\"}'
+          silent: false
