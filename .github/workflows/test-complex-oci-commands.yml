@@ -1,0 +1,33 @@
+name: Test oracle-actions/run-oci-cli-command with complex commands
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '16 6 * * *'
+  #   - cron: '36 12 * * *'
+
+jobs:
+  test-json:
+    runs-on: ubuntu-latest
+    name: Runs a command with parameterised JSON
+    env:
+      OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+      OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+      OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+      OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+      OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+    steps:
+      - name: Create a uniquely named file
+        id: create-file
+        run: |
+          TEST_FILE_FULL_PATH=$(mktemp)
+          TEST_FILE_NAME=$(basename $TEST_FILE_FULL_PATH)
+          echo "The file at ${TEST_FILE_FULL_PATH} created by ${GITHUB_ACTOR} and was triggered by ${GITHUB_EVENT_NAME}" | tee $TEST_FILE_FULL_PATH
+          echo "::set-output name=filename::${TEST_FILE_NAME}"
+          echo "::set-output name=filepath::${TEST_FILE_FULL_PATH}"
+
+      - name: Upload the test file to object storage
+        uses: oracle-actions/run-oci-cli-command@v1.0
+        id: upload-file
+        with:
+          command: os object put -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --file ${{ steps.create-file.outputs.filepath }} --metadata '{\"created_by":\"$GITHUB_ACTOR\",\"key2\":\"$GITHUB_EVENT_NAME\"}'
