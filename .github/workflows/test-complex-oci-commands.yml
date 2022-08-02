@@ -17,6 +17,11 @@ jobs:
       OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
     steps:
+      - name: Create metadata JSON
+        id: create-json
+        run: |
+          echo "::set-output name=metadata::{\"items\:[{\"name\":\"namespace\",\"value\":\"github\"},{\"name\":\"image_tag\",\"value\":\"$GITHUB_RUN_NUMBER\"}]}"
+
       - name: Create a uniquely named file
         id: create-file
         run: |
@@ -26,14 +31,9 @@ jobs:
           echo "::set-output name=filename::${TEST_FILE_NAME}"
           echo "::set-output name=filepath::${TEST_FILE_FULL_PATH}"
 
-      - name: Create metadata JSON
-        id: create-json
+      - name: Display and save the generated JSON
         run: |
-          echo "::set-output name=metadata::{\"created_by\":\"$GITHUB_ACTOR\",\"triggered_by\":\"$GITHUB_EVENT_NAME\"}"
-
-      - name: Check JSON
-        run: |
-          echo '${{ steps.create-json.outputs.metadata }}' | jq
+          echo ${{ steps.create-json.outputs.metadata }} | tee -a ${{ steps.create-file.outputs.filepath }} | jq
 
 
       - name: Upload the test file to object storage
@@ -42,3 +42,9 @@ jobs:
         with:
           command: os object put -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --file ${{ steps.create-file.outputs.filepath }} --metadata '${{ steps.create-json.outputs.metadata }}'
           silent: false
+
+      - name: Show then delete file
+        id: show-delete-file
+        run: |
+          cat ${{ steps.create-file.outputs.fullpath }}
+          rm -f ${{ steps.create-file.outputs.fullpath }}
