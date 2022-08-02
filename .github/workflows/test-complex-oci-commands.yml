@@ -34,15 +34,15 @@ jobs:
 
       - name: Display and save the generated JSON
         run: |
-          echo '${{ steps.create-json.outputs.metadata }}' | jq
-          echo '${{ steps.create-json.outputs.deployargs }}' | tee -a ${{ steps.create-file.outputs.filepath }} | jq
-
+          echo '${{ steps.create-json.outputs.metadata }}' | tee $GITHUB_WORKSPACE/metadata.json
+          echo '${{ steps.create-json.outputs.deployargs }}' | tee -a ${{ steps.create-file.outputs.filepath }}
+          cat "$GITHUB_WORKSPACE/metadata.json"
 
       - name: Upload the test file to object storage
         uses: oracle-actions/run-oci-cli-command@v1.0
         id: upload-file
         with:
-          command: os object put -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --file ${{ steps.create-file.outputs.filepath }} --metadata '${{ steps.create-json.outputs.metadata }}'
+          command: os object put -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --file ${{ steps.create-file.outputs.filepath }} --metadata file://$GITHUB_WORKSPACE/metadata.json
           silent: false
 
       - name: Show then delete file
