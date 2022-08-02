@@ -20,7 +20,7 @@ jobs:
       - name: Create metadata JSON
         id: create-json
         run: |
-          echo "::set-output name=metadata::{\"created_by\":\"$GITHB_ACTOR\",\"triggered_by\":\"$GITHUB_EVENT_NAME\"}]}"
+          echo "::set-output name=metadata::{\"created_by\":\"$GITHUB_ACTOR\",\"triggered_by\":\"$GITHUB_EVENT_NAME\"}]}"
           echo "::set-output name=deployargs::{\"items\":[{\"name\":\"namespace\",\"value\":\"github\"},{\"name\":\"image_tag\",\"value\":\"$GITHUB_RUN_NUMBER\"}]}"
 
       - name: Create a uniquely named file
