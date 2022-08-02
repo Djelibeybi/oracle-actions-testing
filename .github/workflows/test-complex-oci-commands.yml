@@ -20,7 +20,8 @@ jobs:
       - name: Create metadata JSON
         id: create-json
         run: |
-          echo "::set-output name=metadata::{\"items\":[{\"name\":\"namespace\",\"value\":\"github\"},{\"name\":\"image_tag\",\"value\":\"$GITHUB_RUN_NUMBER\"}]}"
+          echo "::set-output name=metadata::{\"created_by\":\"$GITHB_ACTOR\",\"triggered_by\":\"$GITHUB_EVENT_NAME\"}]}"
+          echo "::set-output name=deployargs::{\"items\":[{\"name\":\"namespace\",\"value\":\"github\"},{\"name\":\"image_tag\",\"value\":\"$GITHUB_RUN_NUMBER\"}]}"
 
       - name: Create a uniquely named file
         id: create-file
@@ -33,7 +34,8 @@ jobs:
 
       - name: Display and save the generated JSON
         run: |
-          echo '${{ steps.create-json.outputs.metadata }}' | tee -a ${{ steps.create-file.outputs.filepath }} | jq
+          echo '${{ steps.create-json.outputs.metadata }}' | jq
+          echo '${{ steps.create-json.outputs.deployargs }}' | tee -a ${{ steps.create-file.outputs.filepath }} | jq
 
 
       - name: Upload the test file to object storage
