@@ -7,4 +7,7 @@ jobs:
     steps:
       - name: Event Information
         run: |
-          echo "Event '${{ github.event.action }}' received."
+          echo "Event '${{ github.event.action }}' received from ${{ github.event.client_payload.repository.full_name }}."
+          echo "---"
+          echo "Release Tag: ${{ github.event.client_payload.release.tag_name }}"
+          echo "Download URL: ${{ github.event.client_payload.release.url }}"
