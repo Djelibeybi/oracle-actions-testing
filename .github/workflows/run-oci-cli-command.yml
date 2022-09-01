@@ -7,9 +7,9 @@ on:
     - cron: '36 12 * * *'
 
 jobs:
-  my-instances:
+  basic-commands:
     runs-on: ubuntu-latest
-    name: List the display name and shape of the instances in my compartment
+    name: Runs some basic OCI CLI commands
     env:
       OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
       OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
@@ -34,3 +34,46 @@ jobs:
       - name: List found instances
         run: |
           echo ${{ steps.find-instances.outputs.output }} | jq .
+
+  complex-commands:
+    runs-on: ubuntu-latest
+    name: Runs complex OCI CLI commands
+    env:
+      OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+      OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+      OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+      OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+      OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+    steps:
+      - name: Create metadata JSON
+        id: create-json
+        run: |
+          echo "::set-output name=metadata::{\"created_by\":\"$GITHUB_ACTOR\",\"triggered_by\":\"$GITHUB_EVENT_NAME\"}"
+          echo "::set-output name=deployargs::{\"items\":[{\"name\":\"namespace\",\"value\":\"github\"},{\"name\":\"image_tag\",\"value\":\"$GITHUB_RUN_NUMBER\"}]}"
+
+      - name: Create a uniquely named file
+        id: create-file
+        run: |
+          TEST_FILE_FULL_PATH=$(mktemp)
+          TEST_FILE_NAME=$(basename $TEST_FILE_FULL_PATH)
+          echo "The file at ${TEST_FILE_FULL_PATH} created by ${GITHUB_ACTOR} and was triggered by ${GITHUB_EVENT_NAME}" | tee $TEST_FILE_FULL_PATH
+          echo "::set-output name=filename::${TEST_FILE_NAME}"
+          echo "::set-output name=filepath::${TEST_FILE_FULL_PATH}"
+
+      - name: Display and save the generated JSON
+        run: |
+          echo '${{ steps.create-json.outputs.metadata }}' | jq
+          echo '${{ steps.create-json.outputs.deployargs }}' | tee -a ${{ steps.create-file.outputs.filepath }}
+
+      - name: Upload the test file to object storage
+        uses: oracle-actions/run-oci-cli-command@v1.0
+        id: upload-file
+        with:
+          command: os object put -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --file ${{ steps.create-file.outputs.filepath }} --metadata "${{ toJSON(steps.create-json.outputs.metadata) }}"
+          silent: false
+
+      - name: Show then delete file
+        id: show-delete-file
+        run: |
+          cat ${{ steps.create-file.outputs.fullpath }}
+          rm -f ${{ steps.create-file.outputs.fullpath }}
