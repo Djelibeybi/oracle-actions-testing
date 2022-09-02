@@ -69,7 +69,7 @@ jobs:
         uses: oracle-actions/run-oci-cli-command@v1.0
         id: upload-file
         with:
-          command: os object put -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --file ${{ steps.create-file.outputs.filepath }} --metadata "${{ toJSON(steps.create-json.outputs.metadata) }}"
+          command: os object put -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --file ${{ steps.create-file.outputs.filepath }} --metadata ${{ toJSON(steps.create-json.outputs.metadata) }}
           silent: false
 
       - name: Show then delete file
