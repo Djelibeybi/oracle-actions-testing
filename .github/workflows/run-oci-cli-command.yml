@@ -75,5 +75,12 @@ jobs:
       - name: Show then delete file
         id: show-delete-file
         run: |
-          cat ${{ steps.create-file.outputs.fullpath }}
-          rm -f ${{ steps.create-file.outputs.fullpath }}
+          cat ${{ steps.create-file.outputs.filepath }}
+          rm -f ${{ steps.create-file.outputs.filepath }}
+
+      - name: Remove the test file from object storage
+        uses: oracle-actions/run-oci-cli-command@v1.0
+        id: delete-file-object-store
+        with:
+          command: os object delete -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --force
+          silent: false
