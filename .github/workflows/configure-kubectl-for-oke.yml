@@ -5,6 +5,11 @@ on:
   schedule:
     - cron: '12 6 * * *'
     - cron: '38 12 * * *'
+  push:
+    branches:
+      - "main"
+    paths:
+      - ".github/workflows/configure-kubectl-for-oke.yml"
 
 jobs:
   install-kubectl:

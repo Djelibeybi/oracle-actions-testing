@@ -5,6 +5,11 @@ on:
   schedule:
     - cron: '14 6 * * *'
     - cron: '34 12 * * *'
+  push:
+    branches:
+      - "main"
+    paths:
+      - ".github/workflows/get-ocir-repository-and-login-ocir.yml"
 
 jobs:
   get-ocir-repository-test:
