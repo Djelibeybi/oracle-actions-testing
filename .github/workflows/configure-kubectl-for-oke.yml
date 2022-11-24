@@ -24,10 +24,15 @@ jobs:
 
     steps:
       - name: Configure Kubectl in US (Home) region
-        uses: oracle-actions/configure-kubectl-oke@v1.3
+        uses: oracle-actions/configure-kubectl-oke@v1.3.1
         id: test-configure-kubectl-oke-action
         with:
           cluster: ${{ secrets.OKE_CLUSTER_OCID }}
+
+      - name: Check kubectl path and version
+        run: |
+          which kubectl
+          kubectl version
 
       - name: Run Kubectl in US region
         run: kubectl get nodes -A
@@ -44,7 +49,7 @@ jobs:
 
     steps:
       - name: Configure Kubectl in new region
-        uses: oracle-actions/configure-kubectl-oke@v1.3
+        uses: oracle-actions/configure-kubectl-oke@v1.3.1
         id: test-configure-kubectl-oke-action
         with:
           cluster: ${{ secrets.OKE_NEW_CLUSTER_OCID }}
