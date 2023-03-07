@@ -5,7 +5,7 @@ on:
   schedule:
     - cron: '16 6 * * *'
     - cron: '36 12 * * *'
-  push:
+  pull_request:
     branches:
       - "main"
     paths:
@@ -29,6 +29,12 @@ jobs:
           command: 'iam compartment list --compartment-id-in-subtree=true'
           query: "data[?name=='testing'].id"
 
+      - name: Confirm output from previous step
+        id: confirm-find-instance-id-output
+        run: |
+          echo "Output: ${{ steps.find-compartment-id.outputs.output }}"
+          echo "Raw output: ${{ steps.find-compartment-id.outputs.raw_output }}"
+
       - name: Retrieve the display name and shape of the instances in my compartment
         uses: oracle-actions/run-oci-cli-command@v1.1.1
         id: find-instances
@@ -36,9 +42,16 @@ jobs:
           command: 'compute instance list --compartment-id ${{ steps.find-compartment-id.outputs.raw_output }}'
           query: 'data[*].{name: \"display-name\", shape: shape}'
 
+      - name: Confirm output from previous step
+        id: confirm-find-instances-output
+        run: |
+          echo "Output: ${{ steps.find-instances.outputs.output }}"
+          echo "Raw output: ${{ steps.find-instances.outputs.raw_output }}"
+
       - name: List found instances
         run: |
           echo ${{ steps.find-instances.outputs.output }} | jq .
+
 
   complex-commands:
     runs-on: ubuntu-latest
@@ -53,8 +66,8 @@ jobs:
       - name: Create metadata JSON
         id: create-json
         run: |
-          echo "::set-output name=metadata::{\"created_by\":\"$GITHUB_ACTOR\",\"triggered_by\":\"$GITHUB_EVENT_NAME\"}"
-          echo "::set-output name=deployargs::{\"items\":[{\"name\":\"namespace\",\"value\":\"github\"},{\"name\":\"image_tag\",\"value\":\"$GITHUB_RUN_NUMBER\"}]}"
+          echo "metadata={\"created_by\":\"$GITHUB_ACTOR\",\"triggered_by\":\"$GITHUB_EVENT_NAME\"}" >> $GITHUB_OUTPUT
+          echo "deployargs={\"items\":[{\"name\":\"namespace\",\"value\":\"github\"},{\"name\":\"image_tag\",\"value\":\"$GITHUB_RUN_NUMBER\"}]}" >> $GITHUB_OUTPUT
 
       - name: Create a uniquely named file
         id: create-file
@@ -62,8 +75,8 @@ jobs:
           TEST_FILE_FULL_PATH=$(mktemp)
           TEST_FILE_NAME=$(basename $TEST_FILE_FULL_PATH)
           echo "The file at ${TEST_FILE_FULL_PATH} created by ${GITHUB_ACTOR} and was triggered by ${GITHUB_EVENT_NAME}" | tee $TEST_FILE_FULL_PATH
-          echo "::set-output name=filename::${TEST_FILE_NAME}"
-          echo "::set-output name=filepath::${TEST_FILE_FULL_PATH}"
+          echo "filename=${TEST_FILE_NAME}" >> $GITHUB_OUTPUT
+          echo "filepath=${TEST_FILE_FULL_PATH}" >> $GITHUB_OUTPUT
 
       - name: Display and save the generated JSON
         run: |
