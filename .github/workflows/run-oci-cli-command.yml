@@ -5,7 +5,7 @@ on:
   schedule:
     - cron: '16 6 * * *'
     - cron: '36 12 * * *'
-  push:
+  pull_request:
     branches:
       - "main"
     paths:
