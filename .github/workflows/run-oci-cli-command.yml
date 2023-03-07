@@ -28,6 +28,13 @@ jobs:
         with:
           command: 'iam compartment list --compartment-id-in-subtree=true'
           query: "data[?name=='testing'].id"
+          silent: false
+
+      - name: Confirm output from previous step
+        id: confirm-find-instance-id-output
+        run: |
+          echo "Output: ${{ steps.find-compartment-id.outputs.output }}"
+          echo "Raw output: ${{ steps.find-compartment-id.outputs.raw_output }}"
 
       - name: Retrieve the display name and shape of the instances in my compartment
         uses: oracle-actions/run-oci-cli-command@v1.1.1
@@ -35,10 +42,18 @@ jobs:
         with:
           command: 'compute instance list --compartment-id ${{ steps.find-compartment-id.outputs.raw_output }}'
           query: 'data[*].{name: \"display-name\", shape: shape}'
+          silent: false
+
+      - name: Confirm output from previous step
+        id: confirm-find-instances-output
+        run: |
+          echo "Output: ${{ steps.find-instances.outputs.output }}"
+          echo "Raw output: ${{ steps.find-instances.outputs.raw_output }}"
 
       - name: List found instances
         run: |
           echo ${{ steps.find-instances.outputs.output }} | jq .
+
 
   complex-commands:
     runs-on: ubuntu-latest
