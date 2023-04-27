@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Configure Kubectl in US (Home) region
-        uses: oracle-actions/configure-kubectl-oke@v1.3.1
+        uses: oracle-actions/configure-kubectl-oke@v1.3.2
         id: test-configure-kubectl-oke-action
         with:
           cluster: ${{ secrets.OKE_CLUSTER_OCID }}
@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - name: Configure Kubectl in new region
-        uses: oracle-actions/configure-kubectl-oke@v1.3.1
+        uses: oracle-actions/configure-kubectl-oke@v1.3.2
         id: test-configure-kubectl-oke-action
         with:
           cluster: ${{ secrets.OKE_NEW_CLUSTER_OCID }}
