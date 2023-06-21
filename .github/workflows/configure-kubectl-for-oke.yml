@@ -3,8 +3,8 @@ name: Test oracle-actions/configure-kubectl-oke
 on:
   workflow_dispatch:
   schedule:
-    - cron: '12 6 * * *'
-    - cron: '38 12 * * *'
+    - cron: '12 4 * * *'
+    - cron: '38 10 * * *'
   push:
     branches:
       - "main"

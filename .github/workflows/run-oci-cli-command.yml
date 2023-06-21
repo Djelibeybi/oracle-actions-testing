@@ -3,8 +3,8 @@ name: Test oracle-actions/run-oci-cli-command
 on:
   workflow_dispatch:
   schedule:
-    - cron: '16 6 * * *'
-    - cron: '36 12 * * *'
+    - cron: '16 4 * * *'
+    - cron: '36 10 * * *'
   pull_request:
     branches:
       - "main"
