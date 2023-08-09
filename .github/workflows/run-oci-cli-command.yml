@@ -27,7 +27,8 @@ jobs:
         id: find-compartment-id
         with:
           command: 'iam compartment list --compartment-id-in-subtree=true'
-          query: "data[?name=='testing'].id"
+          query: "data[?name=='github-actions'].id"
+          silent: false
 
       - name: Confirm output from previous step
         id: confirm-find-instance-id-output
@@ -41,6 +42,7 @@ jobs:
         with:
           command: 'compute instance list --compartment-id ${{ steps.find-compartment-id.outputs.raw_output }}'
           query: 'data[*].{name: \"display-name\", shape: shape}'
+          silent: false
 
       - name: Confirm output from previous step
         id: confirm-find-instances-output
