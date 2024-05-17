@@ -23,7 +23,7 @@ jobs:
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
     steps:
       - name: Retrieve the OCID of a named compartment in tenancy
-        uses: oracle-actions/run-oci-cli-command@v1.1.1
+        uses: oracle-actions/run-oci-cli-command@v1.2.0
         id: find-compartment-id
         with:
           command: 'iam compartment list --compartment-id-in-subtree=true'
@@ -36,7 +36,7 @@ jobs:
           echo "Raw output: ${{ steps.find-compartment-id.outputs.raw_output }}"
 
       - name: Retrieve the display name and shape of the instances in my compartment
-        uses: oracle-actions/run-oci-cli-command@v1.1.1
+        uses: oracle-actions/run-oci-cli-command@v1.2.0
         id: find-instances
         with:
           command: 'compute instance list --compartment-id ${{ steps.find-compartment-id.outputs.raw_output }}'
@@ -85,7 +85,7 @@ jobs:
           echo '${{ steps.create-json.outputs.deployargs }}' | tee -a ${{ steps.create-file.outputs.filepath }}
 
       - name: Upload the test file to object storage
-        uses: oracle-actions/run-oci-cli-command@v1.1.1
+        uses: oracle-actions/run-oci-cli-command@v1.2.0
         id: upload-file
         with:
           command: os object put -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --file ${{ steps.create-file.outputs.filepath }} --metadata ${{ toJSON(steps.create-json.outputs.metadata) }}
@@ -97,7 +97,7 @@ jobs:
           rm -f ${{ steps.create-file.outputs.filepath }}
 
       - name: Remove the test file from object storage
-        uses: oracle-actions/run-oci-cli-command@v1.1.1
+        uses: oracle-actions/run-oci-cli-command@v1.2.0
         id: delete-file-object-store
         with:
           command: os object delete -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --force
