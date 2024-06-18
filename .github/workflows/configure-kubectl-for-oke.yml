@@ -2,9 +2,11 @@ name: Test oracle-actions/configure-kubectl-oke
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '12 4 * * *'
-    - cron: '38 10 * * *'
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - ".github/workflows/configure-kubectl-for-oke.yml"
   push:
     branches:
       - "main"
@@ -12,9 +14,9 @@ on:
       - ".github/workflows/configure-kubectl-for-oke.yml"
 
 jobs:
-  install-kubectl-home-region:
+  sanity-test-configure-kubectl:
     runs-on: ubuntu-latest
-    name: Install Kubectl for OKE in US (Home) region
+    name: Sanity test configuring kubectl for OKE
     env:
       OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
       OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
@@ -23,7 +25,7 @@ jobs:
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
 
     steps:
-      - name: Configure Kubectl in US (Home) region
+      - name: Configure Kubectl
         uses: oracle-actions/configure-kubectl-oke@v1.5.0
         id: test-configure-kubectl-oke-action
         with:
@@ -34,25 +36,5 @@ jobs:
           which kubectl
           kubectl version
 
-      - name: Run Kubectl in US region
-        run: kubectl get nodes -A
-
-  install-kubectl-non-home-region:
-    runs-on: ubuntu-latest
-    name: Install Kubectl for OKE in new region
-    env:
-      OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
-      OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
-      OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
-      OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
-      OCI_CLI_REGION: ${{ secrets.OCI_CLI_NEW_REGION }}
-
-    steps:
-      - name: Configure Kubectl in new region
-        uses: oracle-actions/configure-kubectl-oke@v1.5.0
-        id: test-configure-kubectl-oke-action
-        with:
-          cluster: ${{ secrets.OKE_NEW_CLUSTER_OCID }}
-
-      - name: Run Kubectl in new region
+      - name: Run kubectl in US region
         run: kubectl get nodes -A

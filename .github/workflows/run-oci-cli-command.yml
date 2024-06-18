@@ -2,19 +2,21 @@ name: Test oracle-actions/run-oci-cli-command
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '16 4 * * *'
-    - cron: '36 10 * * *'
+  push:
+    branches:
+      "main"
+    paths:
+      - ".github/workflows/run-oci-cli-command.yml"
   pull_request:
     branches:
-      - "main"
+    - "main"
     paths:
       - ".github/workflows/run-oci-cli-command.yml"
 
 jobs:
   basic-commands:
     runs-on: ubuntu-latest
-    name: Runs some basic OCI CLI commands
+    name: Sanity test run-oci-cli-command action
     env:
       OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
       OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
@@ -55,7 +57,7 @@ jobs:
 
   complex-commands:
     runs-on: ubuntu-latest
-    name: Runs complex OCI CLI commands
+    name: Sanity test complex run-oci-cli-command action use cases
     needs: basic-commands
     env:
       OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
@@ -101,4 +103,3 @@ jobs:
         id: delete-file-object-store
         with:
           command: os object delete -ns ${{ secrets.NAMESPACE }} -bn ${{ secrets.STORAGE_BUCKET }} --name ${{ steps.create-file.outputs.filename }} --force
-          
