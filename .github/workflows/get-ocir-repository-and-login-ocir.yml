@@ -31,11 +31,22 @@ jobs:
           name: oraclelinux
           compartment: ${{ secrets.OCI_COMPARTMENT_OCID }}
 
+      - name: Show OCIR repository path
+        id: show-ocir-repository-path
+        run: |
+          echo "${{ steps.get-ocir-repository.outputs.repo_ocid }}"
+          echo "${{ steps.get-ocir-repository.outputs.repo_path }}"
+
       - name: Log into OCIR
         uses: oracle-actions/login-ocir@v1.2.1
         id: login-ocir
         with:
           auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
+
+      - name: Check Docker credentials
+        id: check-docker-credentials
+        run: |
+          cat "$HOME/.docker/config.json"
 
       - name: Tag and push a container image
         id: tag-and-push-image
