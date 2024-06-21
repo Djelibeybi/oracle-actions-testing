@@ -53,7 +53,7 @@ jobs:
           echo "${{ steps.get-ocir-repository.outputs.repo_path }}"
 
       - name: Log into OCIR
-        uses: oracle-actions/login-ocir@v1.2.1
+        uses: oracle-actions/login-ocir@v1.3.0
         id: login-ocir
         with:
           auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
