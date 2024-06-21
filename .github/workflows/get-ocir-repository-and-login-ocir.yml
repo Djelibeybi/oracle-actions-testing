@@ -33,14 +33,14 @@ jobs:
     steps:
 
       - name: Retrieve the OCID of a named compartment in tenancy
-        uses: oracle-actions/run-oci-cli-command@v1.2.0
+        uses: oracle-actions/run-oci-cli-command@v1.3.0
         id: find-compartment-id
         with:
           command: 'iam compartment list --compartment-id-in-subtree=true'
           query: "data[?name=='github-actions'].id"
 
       - name: Get or create an OCIR Repository
-        uses: oracle-actions/get-ocir-repository@v1.2.1
+        uses: oracle-actions/get-ocir-repository@v1.3.0
         id: get-ocir-repository
         with:
           name: oraclelinux
@@ -53,7 +53,7 @@ jobs:
           echo "${{ steps.get-ocir-repository.outputs.repo_path }}"
 
       - name: Log into OCIR
-        uses: oracle-actions/login-ocir@v1.2.1
+        uses: oracle-actions/login-ocir@v1.3.0
         id: login-ocir
         with:
           auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
@@ -64,3 +64,9 @@ jobs:
           docker pull oraclelinux:8-slim
           docker tag "oraclelinux:8-slim" "${{ steps.get-ocir-repository.outputs.repo_path }}:8-slim"
           docker push "${{ steps.get-ocir-repository.outputs.repo_path }}:8-slim"
+
+      - name: Delete the repository
+        id: delete-the-oci-repository
+        uses: oracle-actions/run-oci-cli-command@v1.3.0
+        with:
+          command: artifacts container repository delete --repository-id ${{ steps.get-ocir-repository.outputs.repo_ocid }} --force --wait-for-state DELETED
