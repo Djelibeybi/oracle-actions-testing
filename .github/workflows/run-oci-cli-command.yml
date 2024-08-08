@@ -30,6 +30,7 @@ jobs:
         with:
           command: 'iam compartment list --compartment-id-in-subtree=true'
           query: "data[?name=='github-actions'].id"
+          silent: false
 
       - name: Confirm output from previous step
         id: confirm-find-instance-id-output
